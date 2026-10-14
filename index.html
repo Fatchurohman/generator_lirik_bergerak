@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Suno Sync Lyric Generator</title>
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; background: #0f172a; color: #f8fafc; padding: 20px; max-width: 600px; margin: auto; }
+    .card { background: #1e293b; padding: 20px; border-radius: 12px; border: 1px solid #334155; display: flex; flex-direction: column; gap: 12px; }
+    textarea { background: #0f172a; border: 1px solid #334155; color: #fff; padding: 10px; border-radius: 8px; width: 100%; height: 120px; outline: none; }
+    input[type="file"] { background: #0f172a; padding: 8px; border-radius: 8px; border: 1px solid #334155; color: #fff; }
+    audio { width: 100%; margin-top: 10px; }
+    .btn { background: #0284c7; color: #fff; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    .btn:hover { background: #0369a1; }
+    .btn-record { background: #10b981; font-size: 16px; padding: 15px; }
+    .btn-record:hover { background: #059669; }
+    .output-box { background: #0f172a; border: 1px solid #334155; padding: 12px; border-radius: 8px; font-family: monospace; font-size: 13px; white-space: pre-wrap; max-height: 200px; overflow-y: auto; color: #38bdf8; }
+    .lyric-preview-item { padding: 4px 0; border-bottom: 1px dashed #334155; }
+    .lyric-preview-item.current { color: #f59e0b; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h2>⏱️ Alat Perekam Waktu Lirik Otomatis</h2>
+    <p style="font-size: 12px; color: #94a3b8;">1. Pilih file MP3 lagu kamu.<br>2. Ketik lirik per baris di bawah.<br>3. Putar lagu, lalu klik tombol hijau pas lirik itu mulai dinyanyikan!</p>
+
+    <div>
+      <label>Pilih File MP3 Lagu:</label>
+      <input type="file" id="audioUpload" accept="audio/mp3">
+    </div>
+    <audio id="audioPlayer" controls></audio>
+
+    <div>
+      <label>Masukkan Lirik Polos (Baris per baris):</label>
+      <textarea id="rawLyrics" placeholder="(Intro - Musik mulai)&#10;Baris pertama lirik&#10;Baris kedua lirik"></textarea>
+      <button class="btn" onclick="initLyricSession()">Mulai Sesi Tandai Lirik</button>
+    </div>
+
+    <div id="recordingSection" style="display:none; display:flex; flex-direction:column; gap:10px;">
+      <button class="btn btn-record" onclick="stampCurrentTime()">👉 TANDAI WAKTU UNTUK BARIS INI ([SPACEBAR])</button>
+      <div id="currentLineDisplay" style="font-size: 15px; color: #38bdf8; font-weight: bold; text-align: center;">-</div>
+    </div>
+
+    <div>
+      <label>Hasil Format Supabase (Synced Lyrics):</label>
+      <div id="outputResult" class="output-box">Hasil akan muncul di sini...</div>
+      <button class="btn" style="margin-top: 8px;" onclick="copyResult()">Salin Hasil untuk Supabase</button>
+    </div>
+  </div>
+
+  <script>
+    let lyricLines = [];
+    let currentIndex = 0;
+    let stampedResults = [];
+    const audioPlayer = document.getElementById('audioPlayer');
+
+    document.getElementById('audioUpload').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        audioPlayer.src = URL.createObjectURL(file);
+      }
+    });
+
+    function initLyricSession() {
+      const raw = document.getElementById('rawLyrics').value.trim();
+      if (!raw) {
+        alert('Masukkan lirik polos terlebih dahulu!');
+        return;
+      }
+      lyricLines = raw.split('\n').map(l => l.trim()).filter(l => l !== '');
+      currentIndex = 0;
+      stampedResults = [];
+      
+      document.getElementById('recordingSection').style.display = 'flex';
+      updateDisplay();
+      audioPlayer.play();
+    }
+
+    function stampCurrentTime() {
+      if (currentIndex >= lyricLines.length) {
+        alert('Semua lirik sudah ditandai!');
+        return;
+      }
+
+      const currentTime = Math.floor(audioPlayer.currentTime);
+      const text = lyricLines[currentIndex];
+      
+      stampedResults.push(`${currentTime}:${text}`);
+      document.getElementById('outputResult').innerText = stampedResults.join('\n');
+      
+      currentIndex++;
+      updateDisplay();
+
+      if (currentIndex >= lyricLines.length) {
+        audioPlayer.pause();
+        alert('Selesai! Semua waktu lirik berhasil direkam.');
+      }
+    }
+
+    // Tombol Spasi di keyboard juga bisa dipakai untuk menandai waktu biar makin cepat
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' && document.getElementById('recordingSection').style.display !== 'none') {
+        e.preventDefault();
+        stampCurrentTime();
+      }
+    });
+
+    function updateDisplay() {
+      if (currentIndex < lyricLines.length) {
+        document.getElementById('currentLineDisplay').innerText = `Baris Berikutnya (${currentIndex + 1}/${lyricLines.length}): "${lyricLines[currentIndex]}"`;
+      } else {
+        document.getElementById('currentLineDisplay').innerText = '✅ Selesai ditandai semua!';
+      }
+    }
+
+    function copyResult() {
+      const text = document.getElementById('outputResult').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        alert('Hasil berhasil disalin! Tinggal paste ke kolom synced_lyrics di Supabase.');
+      });
+    }
+  </script>
+</body>
+</html>
