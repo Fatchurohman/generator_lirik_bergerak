@@ -107,7 +107,7 @@
       audioPlayer.load();
     });
 
-    function initLyricSession() {
+        function initLyricSession() {
       const raw = document.getElementById('rawLyrics').value.trim();
       if (!raw) {
         alert('Masukkan lirik polos terlebih dahulu!');
@@ -118,7 +118,16 @@
         return;
       }
 
-      lyricLines = raw.split('\n').map(l => l.trim()).filter(l => l !== '');
+      // Memecah lirik per baris dan membuang baris yang benar-benar kosong
+      lyricLines = raw.split('\n')
+                      .map(l => l.trim())
+                      .filter(l => l !== '');
+                      
+      if (lyricLines.length === 0) {
+        alert('Format lirik tidak valid atau kosong!');
+        return;
+      }
+
       currentIndex = 0;
       stampedResults = [];
       
@@ -128,6 +137,7 @@
         alert('Gagal memutar audio otomatis. Silakan tekan tombol Play pada pemutar audio.');
       });
     }
+
 
     function stampCurrentTime() {
       if (currentIndex >= lyricLines.length) {
