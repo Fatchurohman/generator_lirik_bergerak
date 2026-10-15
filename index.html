@@ -57,7 +57,6 @@
   <div class="card">
     <h2>⏱️ Alat Perekam Waktu Lirik Otomatis</h2>
     
-    <!-- Identitas Developer dengan Titik Kelap-Kelip Ala Live -->
     <div class="developer-badge">
       <span class="live-dot"></span>
       <span>developer : fatur62</span>
@@ -97,9 +96,15 @@
 
     document.getElementById('audioUpload').addEventListener('change', function(e) {
       const file = e.target.files[0];
-      if (file) {
-        audioPlayer.src = URL.createObjectURL(file);
+      if (!file) return;
+
+      if (audioPlayer.src && audioPlayer.src.startsWith('blob:')) {
+        URL.revokeObjectURL(audioPlayer.src);
       }
+
+      const fileURL = URL.createObjectURL(file);
+      audioPlayer.src = fileURL;
+      audioPlayer.load();
     });
 
     function initLyricSession() {
@@ -108,13 +113,20 @@
         alert('Masukkan lirik polos terlebih dahulu!');
         return;
       }
+      if (!audioPlayer.src) {
+        alert('Pilih file MP3 terlebih dahulu!');
+        return;
+      }
+
       lyricLines = raw.split('\n').map(l => l.trim()).filter(l => l !== '');
       currentIndex = 0;
       stampedResults = [];
       
       document.getElementById('recordingSection').style.display = 'flex';
       updateDisplay();
-      audioPlayer.play();
+      audioPlayer.play().catch(() => {
+        alert('Gagal memutar audio otomatis. Silakan tekan tombol Play pada pemutar audio.');
+      });
     }
 
     function stampCurrentTime() {
