@@ -7,7 +7,29 @@
   <style>
     body { font-family: 'Segoe UI', sans-serif; background: #0f172a; color: #f8fafc; padding: 20px; max-width: 600px; margin: auto; }
     .card { background: #1e293b; padding: 20px; border-radius: 12px; border: 1px solid #334155; display: flex; flex-direction: column; gap: 12px; }
-    
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+    .header-top h2 { margin: 0; font-size: 20px; }
+
+    .btn-readme {
+      background: #334155;
+      color: #38bdf8;
+      border: 1px solid #475569;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s;
+    }
+    .btn-readme:hover { background: #475569; }
+
     /* Styling Identitas Developer dengan Animasi Kelap-Kelip Live */
     .developer-badge {
       display: flex;
@@ -28,63 +50,167 @@
       animation: pulse-live 1.5s infinite;
     }
     @keyframes pulse-live {
-      0% {
-        transform: scale(0.95);
-        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
-      }
-      70% {
-        transform: scale(1);
-        box-shadow: 0 0 0 6px rgba(239, 68, 68, 0);
-      }
-      100% {
-        transform: scale(0.95);
-        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
-      }
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
     }
 
-    textarea { background: #0f172a; border: 1px solid #334155; color: #fff; padding: 10px; border-radius: 8px; width: 100%; height: 120px; outline: none; box-sizing: border-box; }
+    textarea { background: #0f172a; border: 1px solid #334155; color: #fff; padding: 10px; border-radius: 8px; width: 100%; height: 120px; outline: none; box-sizing: border-box; resize: vertical; }
     input[type="file"] { background: #0f172a; padding: 8px; border-radius: 8px; border: 1px solid #334155; color: #fff; width: 100%; box-sizing: border-box; }
     audio { width: 100%; margin-top: 10px; }
-    .btn { background: #0284c7; color: #fff; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; }
+    .btn { background: #0284c7; color: #fff; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; transition: background 0.2s; }
     .btn:hover { background: #0369a1; }
     .btn-record { background: #10b981; font-size: 15px; padding: 14px; }
     .btn-record:hover { background: #059669; }
+    .btn-undo { background: #475569; font-size: 13px; padding: 8px; }
+    .btn-undo:hover { background: #64748b; }
     .output-box { background: #0f172a; border: 1px solid #334155; padding: 12px; border-radius: 8px; font-family: monospace; font-size: 13px; white-space: pre-wrap; max-height: 200px; overflow-y: auto; color: #38bdf8; }
+
+    /* Styling Modal Baca Saya */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(3px);
+      z-index: 999;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      max-width: 520px;
+      width: 100%;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #334155;
+      padding-bottom: 10px;
+      margin-bottom: 14px;
+    }
+    .modal-header h3 { margin: 0; color: #38bdf8; font-size: 17px; }
+    .modal-close {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-size: 22px;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .modal-close:hover { color: #fff; }
+    .guide-list {
+      padding-left: 18px;
+      margin: 0 0 14px 0;
+      font-size: 13.5px;
+      line-height: 1.6;
+      color: #e2e8f0;
+    }
+    .guide-list li { margin-bottom: 8px; }
+    .guide-tip {
+      background: #0f172a;
+      border-left: 3px solid #10b981;
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 12.5px;
+      color: #cbd5e1;
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+    .guide-example {
+      background: #0f172a;
+      border: 1px solid #334155;
+      padding: 10px;
+      border-radius: 6px;
+      font-family: monospace;
+      font-size: 12px;
+      color: #38bdf8;
+      margin-bottom: 16px;
+      white-space: pre-wrap;
+    }
   </style>
 </head>
 <body>
 
   <div class="card">
-    <h2>⏱️ Alat Perekam Waktu Lirik Otomatis</h2>
-    
+    <div class="header-top">
+      <h2>⏱️ Alat Perekam Waktu Lirik</h2>
+      <button type="button" class="btn-readme" onclick="openReadme()">📖 Baca Saya</button>
+    </div>
+
     <div class="developer-badge">
       <span class="live-dot"></span>
       <span>developer : fatur62</span>
     </div>
 
-    <p style="font-size: 12px; color: #94a3b8;">1. Pilih file MP3 lagu kamu.<br>2. Ketik lirik per baris di bawah.<br>3. Putar lagu, lalu klik tombol hijau atau tekan **Spasi** pas lirik itu mulai dinyanyikan!</p>
+    <p style="font-size: 12px; color: #94a3b8; margin: 0;">
+      1. Pilih file audio lagu kamu.<br>
+      2. Ketik lirik per baris di bawah.<br>
+      3. Putar lagu, lalu klik tombol hijau atau tekan <strong>Spasi</strong> pas lirik itu mulai dinyanyikan!
+    </p>
 
     <div>
-      <label>Pilih File MP3 Lagu:</label>
-      <input type="file" id="audioUpload" accept="audio/mp3">
+      <label>Pilih File Audio Lagu (MP3/WAV/M4A):</label>
+      <input type="file" id="audioUpload" accept="audio/*">
     </div>
     <audio id="audioPlayer" controls></audio>
 
     <div>
       <label>Masukkan Lirik Polos (Baris per baris):</label>
       <textarea id="rawLyrics" placeholder="(Intro - Musik mulai)&#10;Baris pertama lirik&#10;Baris kedua lirik"></textarea>
-      <button class="btn" onclick="initLyricSession()" style="margin-top: 8px;">Mulai Sesi Tandai Lirik</button>
+      <button type="button" class="btn" onclick="initLyricSession()" style="margin-top: 8px;">Mulai Sesi Tandai Lirik</button>
     </div>
 
     <div id="recordingSection" style="display:none; flex-direction:column; gap:10px;">
-      <button class="btn btn-record" onclick="stampCurrentTime()">👉 TANDAI WAKTU UNTUK BARIS INI ([SPACEBAR])</button>
+      <button type="button" id="stampBtn" class="btn btn-record" onclick="stampCurrentTime()">👉 TANDAI WAKTU UNTUK BARIS INI ([SPACEBAR])</button>
+      <button type="button" class="btn btn-undo" onclick="undoLastStamp()">↩️ Batalkan Baris Terakhir (Undo)</button>
       <div id="currentLineDisplay" style="font-size: 14px; color: #38bdf8; font-weight: bold; text-align: center;">-</div>
     </div>
 
     <div>
       <label>Hasil Format Supabase (Synced Lyrics):</label>
       <div id="outputResult" class="output-box">Hasil akan muncul di sini...</div>
-      <button class="btn" style="margin-top: 8px;" onclick="copyResult()">Salin Hasil untuk Supabase</button>
+      <button type="button" class="btn" style="margin-top: 8px;" onclick="copyResult()">Salin Hasil untuk Supabase</button>
+    </div>
+  </div>
+
+  <!-- Modal Baca Saya -->
+  <div id="readmeModal" class="modal-overlay" onclick="handleOverlayClick(event)">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>📖 Panduan Penggunaan</h3>
+        <button type="button" class="modal-close" onclick="closeReadme()" title="Tutup">&times;</button>
+      </div>
+
+      <ol class="guide-list">
+        <li><strong>Pilih Lagu:</strong> Klik <em>Choose File</em> untuk memasukkan file audio lagu (MP3, WAV, atau M4A) dari HP atau laptop.</li>
+        <li><strong>Masukkan Lirik:</strong> Tempel (paste) lirik polos di kotak teks. Pastikan <strong>1 kalimat = 1 baris</strong> (baris kosong otomatis diabaikan).</li>
+        <li><strong>Mulai Sesi:</strong> Klik tombol biru <strong>Mulai Sesi Tandai Lirik</strong>. Lagu otomatis diputar dari detik ke-0.</li>
+        <li><strong>Tandai Waktu:</strong> Dengarkan lagu. Tepat saat baris lirik yang muncul di layar mulai dinyanyikan, tekan tombol <strong>Spasi</strong> (di laptop) atau ketuk tombol hijau <strong>TANDAI WAKTU</strong> (di HP).</li>
+        <li><strong>Salin Hasil:</strong> Setelah semua baris selesai ditandai, klik <strong>Salin Hasil untuk Supabase</strong> lalu paste ke kolom <code>synced_lyrics</code>.</li>
+      </ol>
+
+      <div class="guide-tip">
+        <strong>💡 Tips Cepat:</strong><br>
+        • <strong>Salah pencet?</strong> Klik tombol <strong>Undo</strong> untuk membatalkan baris terakhir, lalu geser mundur sedikit bar pemutar audio dan tandai ulang.<br>
+        • <strong>Lagu terlalu cepat?</strong> Kamu bisa tekan <em>Pause</em> di pemutar audio kapan saja untuk istirahat, lalu <em>Play</em> lagi tanpa mengulang dari awal.
+      </div>
+
+      <div style="font-size: 12px; color: #94a3b8; margin-bottom: 6px;">Contoh format hasil yang dihasilkan:</div>
+      <div class="guide-example">0:(Intro - Musik mulai)
+12:Baris pertama lirik lagu
+18:Baris kedua lirik lagu</div>
+
+      <button type="button" class="btn" onclick="closeReadme()">Mengerti, Tutup Panduan</button>
     </div>
   </div>
 
@@ -93,6 +219,21 @@
     let currentIndex = 0;
     let stampedResults = [];
     const audioPlayer = document.getElementById('audioPlayer');
+    const outputResult = document.getElementById('outputResult');
+    const recordingSection = document.getElementById('recordingSection');
+    const readmeModal = document.getElementById('readmeModal');
+
+    function openReadme() {
+      readmeModal.classList.add('open');
+    }
+
+    function closeReadme() {
+      readmeModal.classList.remove('open');
+    }
+
+    function handleOverlayClick(e) {
+      if (e.target === readmeModal) closeReadme();
+    }
 
     document.getElementById('audioUpload').addEventListener('change', function(e) {
       const file = e.target.files[0];
@@ -107,22 +248,21 @@
       audioPlayer.load();
     });
 
-        function initLyricSession() {
+    function initLyricSession() {
       const raw = document.getElementById('rawLyrics').value.trim();
       if (!raw) {
         alert('Masukkan lirik polos terlebih dahulu!');
         return;
       }
       if (!audioPlayer.src) {
-        alert('Pilih file MP3 terlebih dahulu!');
+        alert('Pilih file audio terlebih dahulu!');
         return;
       }
 
-      // Memecah lirik per baris dan membuang baris yang benar-benar kosong
       lyricLines = raw.split('\n')
                       .map(l => l.trim())
                       .filter(l => l !== '');
-                      
+
       if (lyricLines.length === 0) {
         alert('Format lirik tidak valid atau kosong!');
         return;
@@ -130,14 +270,17 @@
 
       currentIndex = 0;
       stampedResults = [];
-      
-      document.getElementById('recordingSection').style.display = 'flex';
+      outputResult.innerText = 'Menunggu tanda waktu pertama...';
+      recordingSection.style.display = 'flex';
       updateDisplay();
+
+      if (document.activeElement) document.activeElement.blur();
+
+      audioPlayer.currentTime = 0;
       audioPlayer.play().catch(() => {
         alert('Gagal memutar audio otomatis. Silakan tekan tombol Play pada pemutar audio.');
       });
     }
-
 
     function stampCurrentTime() {
       if (currentIndex >= lyricLines.length) {
@@ -147,10 +290,10 @@
 
       const currentTime = Math.floor(audioPlayer.currentTime);
       const text = lyricLines[currentIndex];
-      
+
       stampedResults.push(`${currentTime}:${text}`);
-      document.getElementById('outputResult').innerText = stampedResults.join('\n');
-      
+      renderOutput();
+
       currentIndex++;
       updateDisplay();
 
@@ -160,26 +303,79 @@
       }
     }
 
+    function undoLastStamp() {
+      if (stampedResults.length === 0) return;
+
+      stampedResults.pop();
+      currentIndex--;
+      renderOutput();
+      updateDisplay();
+    }
+
+    function renderOutput() {
+      outputResult.innerText = stampedResults.length > 0
+        ? stampedResults.join('\n')
+        : 'Menunggu tanda waktu pertama...';
+      outputResult.scrollTop = outputResult.scrollHeight;
+    }
+
     document.addEventListener('keydown', (e) => {
-      if (e.code === 'Space' && document.getElementById('recordingSection').style.display !== 'none') {
+      if (e.code === 'Escape' && readmeModal.classList.contains('open')) {
+        closeReadme();
+        return;
+      }
+
+      // Abaikan Spasi jika modal panduan terbuka, sedang mengetik, atau tombol ditahan
+      if (readmeModal.classList.contains('open')) return;
+      const tag = document.activeElement ? document.activeElement.tagName : '';
+      if (tag === 'TEXTAREA' || tag === 'INPUT' || e.repeat) return;
+
+      if (e.code === 'Space' && recordingSection.style.display !== 'none') {
         e.preventDefault();
         stampCurrentTime();
       }
     });
 
     function updateDisplay() {
+      const display = document.getElementById('currentLineDisplay');
       if (currentIndex < lyricLines.length) {
-        document.getElementById('currentLineDisplay').innerText = `Baris Berikutnya (${currentIndex + 1}/${lyricLines.length}): "${lyricLines[currentIndex]}"`;
+        display.innerText = `Baris Berikutnya (${currentIndex + 1}/${lyricLines.length}): "${lyricLines[currentIndex]}"`;
       } else {
-        document.getElementById('currentLineDisplay').innerText = '✅ Selesai ditandai semua!';
+        display.innerText = '✅ Selesai ditandai semua!';
       }
     }
 
     function copyResult() {
-      const text = document.getElementById('outputResult').innerText;
-      navigator.clipboard.writeText(text).then(() => {
+      if (stampedResults.length === 0) {
+        alert('Belum ada hasil lirik yang ditandai!');
+        return;
+      }
+
+      const text = stampedResults.join('\n');
+
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text)
+          .then(() => alert('Hasil berhasil disalin! Tinggal paste ke kolom synced_lyrics di Supabase.'))
+          .catch(() => fallbackCopy(text));
+      } else {
+        fallbackCopy(text);
+      }
+    }
+
+    function fallbackCopy(text) {
+      const tempArea = document.createElement('textarea');
+      tempArea.value = text;
+      tempArea.style.position = 'fixed';
+      tempArea.style.opacity = '0';
+      document.body.appendChild(tempArea);
+      tempArea.select();
+      try {
+        document.execCommand('copy');
         alert('Hasil berhasil disalin! Tinggal paste ke kolom synced_lyrics di Supabase.');
-      });
+      } catch (err) {
+        alert('Gagal menyalin otomatis. Silakan blok dan salin manual dari kotak hasil.');
+      }
+      document.body.removeChild(tempArea);
     }
   </script>
 </body>
