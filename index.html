@@ -3,139 +3,389 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Suno Sync Lyric Generator</title>
+  <title>Suno Sync Lyric Generator — fatur62</title>
   <style>
-    body { font-family: 'Segoe UI', sans-serif; background: #0f172a; color: #f8fafc; padding: 20px; max-width: 600px; margin: auto; }
-    .card { background: #1e293b; padding: 20px; border-radius: 12px; border: 1px solid #334155; display: flex; flex-direction: column; gap: 12px; }
+    :root {
+      --bg-deep: #060913;
+      --card-bg: rgba(17, 24, 39, 0.78);
+      --card-border: rgba(148, 163, 184, 0.16);
+      --input-bg: rgba(9, 13, 24, 0.85);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent-cyan: #38bdf8;
+      --accent-indigo: #6366f1;
+      --accent-emerald: #10b981;
+      --accent-gold: #f59e0b;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg-deep);
+      background-image:
+        radial-gradient(circle at 15% 10%, rgba(56, 189, 248, 0.14), transparent 40%),
+        radial-gradient(circle at 85% 90%, rgba(99, 102, 241, 0.14), transparent 45%);
+      color: var(--text-main);
+      padding: 24px 16px;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 620px;
+      background: var(--card-bg);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      padding: 26px;
+      border-radius: 20px;
+      border: 1px solid var(--card-border);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
 
     .header-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
     }
-    .header-top h2 { margin: 0; font-size: 20px; }
 
-    .btn-readme {
-      background: #334155;
-      color: #38bdf8;
-      border: 1px solid #475569;
-      padding: 6px 12px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: bold;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: background 0.2s;
+    .title-wrap h2 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      background: linear-gradient(135deg, #f8fafc 20%, #38bdf8 80%, #818cf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
-    .btn-readme:hover { background: #475569; }
 
-    /* Styling Identitas Developer dengan Animasi Kelap-Kelip Live */
     .developer-badge {
-      display: flex;
+      display: inline-flex;
       align-items: center;
       gap: 8px;
-      font-size: 13px;
-      color: #94a3b8;
-      margin-top: -6px;
-      margin-bottom: 4px;
+      font-size: 12px;
+      color: var(--text-muted);
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(148, 163, 184, 0.15);
+      padding: 4px 10px;
+      border-radius: 999px;
+      margin-top: 8px;
+      width: fit-content;
     }
+
     .live-dot {
-      width: 8px;
-      height: 8px;
+      width: 7px;
+      height: 7px;
       background-color: #ef4444;
       border-radius: 50%;
       display: inline-block;
-      box-shadow: 0 0 0 rgba(239, 68, 68, 0.4);
       animation: pulse-live 1.5s infinite;
     }
+
     @keyframes pulse-live {
-      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.75); }
       70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
       100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
     }
 
-    textarea { background: #0f172a; border: 1px solid #334155; color: #fff; padding: 10px; border-radius: 8px; width: 100%; height: 120px; outline: none; box-sizing: border-box; resize: vertical; }
-    input[type="file"] { background: #0f172a; padding: 8px; border-radius: 8px; border: 1px solid #334155; color: #fff; width: 100%; box-sizing: border-box; }
-    audio { width: 100%; margin-top: 10px; }
-    .btn { background: #0284c7; color: #fff; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; transition: background 0.2s; }
-    .btn:hover { background: #0369a1; }
-    .btn-record { background: #10b981; font-size: 15px; padding: 14px; }
-    .btn-record:hover { background: #059669; }
-    .btn-undo { background: #475569; font-size: 13px; padding: 8px; }
-    .btn-undo:hover { background: #64748b; }
-    .output-box { background: #0f172a; border: 1px solid #334155; padding: 12px; border-radius: 8px; font-family: monospace; font-size: 13px; white-space: pre-wrap; max-height: 200px; overflow-y: auto; color: #38bdf8; }
+    .btn-readme {
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--accent-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
 
-    /* Styling Modal Baca Saya */
+    .btn-readme:hover {
+      background: rgba(56, 189, 248, 0.22);
+      transform: translateY(-1px);
+    }
+
+    .quick-steps {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      background: rgba(15, 23, 42, 0.55);
+      border: 1px solid rgba(148, 163, 184, 0.1);
+      padding: 12px 14px;
+      border-radius: 12px;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .section-block {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #cbd5e1;
+      letter-spacing: 0.2px;
+    }
+
+    input[type="file"] {
+      background: var(--input-bg);
+      padding: 10px;
+      border-radius: 12px;
+      border: 1px solid var(--card-border);
+      color: #cbd5e1;
+      width: 100%;
+      font-size: 13px;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    input[type="file"]:hover { border-color: rgba(56, 189, 248, 0.45); }
+
+    input[type="file"]::file-selector-button {
+      background: linear-gradient(135deg, #0284c7, #4f46e5);
+      color: #fff;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-weight: 600;
+      margin-right: 12px;
+      cursor: pointer;
+    }
+
+    audio {
+      width: 100%;
+      border-radius: 12px;
+      outline: none;
+      margin-top: 2px;
+    }
+
+    textarea {
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      color: #f8fafc;
+      padding: 12px 14px;
+      border-radius: 12px;
+      width: 100%;
+      height: 130px;
+      outline: none;
+      resize: vertical;
+      font-family: inherit;
+      font-size: 13.5px;
+      line-height: 1.5;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    textarea:focus {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #0284c7, #4f46e5);
+      color: #fff;
+      border: none;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.28);
+    }
+
+    .btn:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+    }
+
+    .btn:active { transform: scale(0.98); }
+
+    #recordingSection {
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+      background: rgba(16, 185, 129, 0.06);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      padding: 16px;
+      border-radius: 14px;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 6px;
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #10b981, #38bdf8);
+      transition: width 0.25s ease;
+    }
+
+    #currentLineDisplay {
+      font-size: 14.5px;
+      color: #e2e8f0;
+      font-weight: 600;
+      text-align: center;
+      padding: 8px 10px;
+      background: rgba(15, 23, 42, 0.65);
+      border-radius: 10px;
+      border: 1px solid rgba(56, 189, 248, 0.2);
+    }
+
+    .btn-record {
+      background: linear-gradient(135deg, #059669, #10b981);
+      font-size: 15px;
+      padding: 15px;
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.32);
+    }
+
+    .btn-undo {
+      background: rgba(71, 85, 105, 0.45);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      font-size: 13px;
+      padding: 9px;
+      box-shadow: none;
+    }
+
+    .btn-undo:hover { background: rgba(71, 85, 105, 0.7); }
+
+    .output-box {
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      padding: 14px;
+      border-radius: 12px;
+      font-family: 'Cascadia Code', 'Fira Code', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      max-height: 210px;
+      overflow-y: auto;
+      color: var(--accent-cyan);
+    }
+
+    /* Modal Baca Saya */
     .modal-overlay {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(15, 23, 42, 0.85);
-      backdrop-filter: blur(3px);
+      background: rgba(6, 9, 19, 0.82);
+      backdrop-filter: blur(6px);
       z-index: 999;
       justify-content: center;
       align-items: center;
       padding: 16px;
     }
+
     .modal-overlay.open { display: flex; }
+
     .modal-box {
-      background: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 12px;
+      background: #111827;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      border-radius: 18px;
       max-width: 520px;
       width: 100%;
-      max-height: 85vh;
+      max-height: 86vh;
       overflow-y: auto;
-      padding: 20px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      padding: 24px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.65);
     }
+
     .modal-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid #334155;
-      padding-bottom: 10px;
-      margin-bottom: 14px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+      padding-bottom: 12px;
+      margin-bottom: 16px;
     }
-    .modal-header h3 { margin: 0; color: #38bdf8; font-size: 17px; }
+
+    .modal-header h3 { margin: 0; color: var(--accent-cyan); font-size: 18px; }
+
     .modal-close {
       background: transparent;
       border: none;
-      color: #94a3b8;
-      font-size: 22px;
+      color: var(--text-muted);
+      font-size: 24px;
       cursor: pointer;
       line-height: 1;
     }
+
     .modal-close:hover { color: #fff; }
+
     .guide-list {
       padding-left: 18px;
-      margin: 0 0 14px 0;
+      margin: 0 0 16px 0;
       font-size: 13.5px;
-      line-height: 1.6;
+      line-height: 1.65;
       color: #e2e8f0;
     }
+
     .guide-list li { margin-bottom: 8px; }
+
     .guide-tip {
-      background: #0f172a;
-      border-left: 3px solid #10b981;
-      padding: 10px 12px;
-      border-radius: 6px;
+      background: rgba(16, 185, 129, 0.08);
+      border-left: 3px solid var(--accent-emerald);
+      padding: 12px 14px;
+      border-radius: 8px;
       font-size: 12.5px;
       color: #cbd5e1;
-      margin-bottom: 14px;
-      line-height: 1.5;
-    }
-    .guide-example {
-      background: #0f172a;
-      border: 1px solid #334155;
-      padding: 10px;
-      border-radius: 6px;
-      font-family: monospace;
-      font-size: 12px;
-      color: #38bdf8;
       margin-bottom: 16px;
+      line-height: 1.55;
+    }
+
+    .guide-example {
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      padding: 12px;
+      border-radius: 10px;
+      font-family: monospace;
+      font-size: 12.5px;
+      color: var(--accent-cyan);
+      margin-bottom: 18px;
       white-space: pre-wrap;
+    }
+
+    /* Floating Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #1e293b;
+      color: #f8fafc;
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-size: 13.5px;
+      font-weight: 600;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+      z-index: 1000;
+      text-align: center;
+      max-width: 90vw;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
     }
   </style>
 </head>
@@ -143,43 +393,47 @@
 
   <div class="card">
     <div class="header-top">
-      <h2>⏱️ Alat Perekam Waktu Lirik</h2>
+      <div class="title-wrap">
+        <h2>⏱️ Suno Sync Lyric Generator</h2>
+        <div class="developer-badge">
+          <span class="live-dot"></span>
+          <span>developer : fatur62</span>
+        </div>
+      </div>
       <button type="button" class="btn-readme" onclick="openReadme()">📖 Baca Saya</button>
     </div>
 
-    <div class="developer-badge">
-      <span class="live-dot"></span>
-      <span>developer : fatur62</span>
-    </div>
-
-    <p style="font-size: 12px; color: #94a3b8; margin: 0;">
+    <p class="quick-steps">
       1. Pilih file audio lagu kamu.<br>
-      2. Ketik lirik per baris di bawah.<br>
-      3. Putar lagu, lalu klik tombol hijau atau tekan <strong>Spasi</strong> pas lirik itu mulai dinyanyikan!
+      2. Tempel lirik per baris di kolom bawah.<br>
+      3. Putar lagu, lalu ketuk tombol hijau atau tekan <strong>Spasi</strong> tepat saat lirik dinyanyikan.
     </p>
 
-    <div>
-      <label>Pilih File Audio Lagu (MP3/WAV/M4A):</label>
+    <div class="section-block">
+      <label for="audioUpload">🎵 Pilih File Audio Lagu (MP3 / WAV / M4A)</label>
       <input type="file" id="audioUpload" accept="audio/*">
+      <audio id="audioPlayer" controls></audio>
     </div>
-    <audio id="audioPlayer" controls></audio>
 
-    <div>
-      <label>Masukkan Lirik Polos (Baris per baris):</label>
+    <div class="section-block">
+      <label for="rawLyrics">📝 Masukkan Lirik Polos (1 Kalimat = 1 Baris)</label>
       <textarea id="rawLyrics" placeholder="(Intro - Musik mulai)&#10;Baris pertama lirik&#10;Baris kedua lirik"></textarea>
-      <button type="button" class="btn" onclick="initLyricSession()" style="margin-top: 8px;">Mulai Sesi Tandai Lirik</button>
+      <button type="button" class="btn" onclick="initLyricSession()">▶️ Mulai Sesi Tandai Lirik</button>
     </div>
 
-    <div id="recordingSection" style="display:none; flex-direction:column; gap:10px;">
-      <button type="button" id="stampBtn" class="btn btn-record" onclick="stampCurrentTime()">👉 TANDAI WAKTU UNTUK BARIS INI ([SPACEBAR])</button>
+    <div id="recordingSection">
+      <div class="progress-track">
+        <div id="progressFill" class="progress-fill"></div>
+      </div>
+      <div id="currentLineDisplay">-</div>
+      <button type="button" id="stampBtn" class="btn btn-record" onclick="stampCurrentTime()">👉 TANDAI WAKTU BARIS INI ([SPACEBAR])</button>
       <button type="button" class="btn btn-undo" onclick="undoLastStamp()">↩️ Batalkan Baris Terakhir (Undo)</button>
-      <div id="currentLineDisplay" style="font-size: 14px; color: #38bdf8; font-weight: bold; text-align: center;">-</div>
     </div>
 
-    <div>
-      <label>Hasil Format Supabase (Synced Lyrics):</label>
+    <div class="section-block">
+      <label>✨ Hasil Synced Lyrics (Siap untuk GitHub / JSON)</label>
       <div id="outputResult" class="output-box">Hasil akan muncul di sini...</div>
-      <button type="button" class="btn" style="margin-top: 8px;" onclick="copyResult()">Salin Hasil untuk Supabase</button>
+      <button type="button" class="btn" onclick="copyResult()">📋 Salin Hasil Synced Lyrics</button>
     </div>
   </div>
 
@@ -192,20 +446,20 @@
       </div>
 
       <ol class="guide-list">
-        <li><strong>Pilih Lagu:</strong> Klik <em>Choose File</em> untuk memasukkan file audio lagu (MP3, WAV, atau M4A) dari HP atau laptop.</li>
-        <li><strong>Masukkan Lirik:</strong> Tempel (paste) lirik polos di kotak teks. Pastikan <strong>1 kalimat = 1 baris</strong> (baris kosong otomatis diabaikan).</li>
-        <li><strong>Mulai Sesi:</strong> Klik tombol biru <strong>Mulai Sesi Tandai Lirik</strong>. Lagu otomatis diputar dari detik ke-0.</li>
-        <li><strong>Tandai Waktu:</strong> Dengarkan lagu. Tepat saat baris lirik yang muncul di layar mulai dinyanyikan, tekan tombol <strong>Spasi</strong> (di laptop) atau ketuk tombol hijau <strong>TANDAI WAKTU</strong> (di HP).</li>
-        <li><strong>Salin Hasil:</strong> Setelah semua baris selesai ditandai, klik <strong>Salin Hasil untuk Supabase</strong> lalu paste ke kolom <code>synced_lyrics</code>.</li>
+        <li><strong>Pilih Lagu:</strong> Klik tombol pilih file untuk memasukkan audio lagu (MP3, WAV, atau M4A) dari HP atau laptop.</li>
+        <li><strong>Masukkan Lirik:</strong> Tempel (paste) lirik polos di kotak teks. Pastikan <strong>1 kalimat = 1 baris</strong> (baris kosong otomatis dibuang).</li>
+        <li><strong>Mulai Sesi:</strong> Klik <strong>Mulai Sesi Tandai Lirik</strong>. Lagu otomatis diputar dari detik ke-0.</li>
+        <li><strong>Tandai Waktu:</strong> Dengarkan lagu. Tepat saat baris lirik yang tampil di layar mulai dinyanyikan, tekan <strong>Spasi</strong> (laptop) atau ketuk tombol hijau <strong>TANDAI WAKTU</strong> (HP).</li>
+        <li><strong>Salin ke GitHub:</strong> Setelah selesai, klik <strong>Salin Hasil Synced Lyrics</strong> lalu tempel ke file lirik atau katalog JSON di repositori GitHub kamu.</li>
       </ol>
 
       <div class="guide-tip">
         <strong>💡 Tips Cepat:</strong><br>
-        • <strong>Salah pencet?</strong> Klik tombol <strong>Undo</strong> untuk membatalkan baris terakhir, lalu geser mundur sedikit bar pemutar audio dan tandai ulang.<br>
-        • <strong>Lagu terlalu cepat?</strong> Kamu bisa tekan <em>Pause</em> di pemutar audio kapan saja untuk istirahat, lalu <em>Play</em> lagi tanpa mengulang dari awal.
+        • <strong>Salah pencet?</strong> Klik <strong>Undo</strong> untuk membatalkan baris terakhir, geser mundur sedikit pemutar audio, lalu tandai ulang.<br>
+        • <strong>Butuh jeda?</strong> Tekan <em>Pause</em> pada pemutar audio kapan saja, lalu <em>Play</em> lagi tanpa mengulang dari awal.
       </div>
 
-      <div style="font-size: 12px; color: #94a3b8; margin-bottom: 6px;">Contoh format hasil yang dihasilkan:</div>
+      <div style="font-size: 12px; color: #94a3b8; margin-bottom: 6px;">Contoh format hasil:</div>
       <div class="guide-example">0:(Intro - Musik mulai)
 12:Baris pertama lirik lagu
 18:Baris kedua lirik lagu</div>
@@ -214,14 +468,30 @@
     </div>
   </div>
 
+  <!-- Toast Notification -->
+  <div id="toast" class="toast"></div>
+
   <script>
     let lyricLines = [];
     let currentIndex = 0;
     let stampedResults = [];
+    let toastTimer = null;
+
     const audioPlayer = document.getElementById('audioPlayer');
     const outputResult = document.getElementById('outputResult');
     const recordingSection = document.getElementById('recordingSection');
     const readmeModal = document.getElementById('readmeModal');
+    const progressFill = document.getElementById('progressFill');
+    const toastEl = document.getElementById('toast');
+
+    function showToast(message) {
+      toastEl.innerText = message;
+      toastEl.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toastEl.classList.remove('show');
+      }, 2800);
+    }
 
     function openReadme() {
       readmeModal.classList.add('open');
@@ -246,16 +516,17 @@
       const fileURL = URL.createObjectURL(file);
       audioPlayer.src = fileURL;
       audioPlayer.load();
+      showToast('🎵 Audio berhasil dimuat!');
     });
 
     function initLyricSession() {
       const raw = document.getElementById('rawLyrics').value.trim();
       if (!raw) {
-        alert('Masukkan lirik polos terlebih dahulu!');
+        showToast('⚠️ Masukkan lirik polos terlebih dahulu!');
         return;
       }
       if (!audioPlayer.src) {
-        alert('Pilih file audio terlebih dahulu!');
+        showToast('⚠️ Pilih file audio terlebih dahulu!');
         return;
       }
 
@@ -264,7 +535,7 @@
                       .filter(l => l !== '');
 
       if (lyricLines.length === 0) {
-        alert('Format lirik tidak valid atau kosong!');
+        showToast('⚠️ Format lirik tidak valid atau kosong!');
         return;
       }
 
@@ -278,13 +549,13 @@
 
       audioPlayer.currentTime = 0;
       audioPlayer.play().catch(() => {
-        alert('Gagal memutar audio otomatis. Silakan tekan tombol Play pada pemutar audio.');
+        showToast('▶️ Klik tombol Play pada pemutar audio untuk memulai.');
       });
     }
 
     function stampCurrentTime() {
       if (currentIndex >= lyricLines.length) {
-        alert('Semua lirik sudah ditandai!');
+        showToast('✅ Semua lirik sudah ditandai!');
         return;
       }
 
@@ -299,7 +570,7 @@
 
       if (currentIndex >= lyricLines.length) {
         audioPlayer.pause();
-        alert('Selesai! Semua waktu lirik berhasil direkam.');
+        showToast('🎉 Selesai! Semua waktu lirik berhasil direkam.');
       }
     }
 
@@ -310,6 +581,7 @@
       currentIndex--;
       renderOutput();
       updateDisplay();
+      showToast('↩️ Baris terakhir dibatalkan.');
     }
 
     function renderOutput() {
@@ -325,7 +597,6 @@
         return;
       }
 
-      // Abaikan Spasi jika modal panduan terbuka, sedang mengetik, atau tombol ditahan
       if (readmeModal.classList.contains('open')) return;
       const tag = document.activeElement ? document.activeElement.tagName : '';
       if (tag === 'TEXTAREA' || tag === 'INPUT' || e.repeat) return;
@@ -338,16 +609,19 @@
 
     function updateDisplay() {
       const display = document.getElementById('currentLineDisplay');
+      const percent = lyricLines.length > 0 ? (currentIndex / lyricLines.length) * 100 : 0;
+      progressFill.style.width = `${percent}%`;
+
       if (currentIndex < lyricLines.length) {
-        display.innerText = `Baris Berikutnya (${currentIndex + 1}/${lyricLines.length}): "${lyricLines[currentIndex]}"`;
+        display.innerText = `Baris ${currentIndex + 1}/${lyricLines.length}: "${lyricLines[currentIndex]}"`;
       } else {
-        display.innerText = '✅ Selesai ditandai semua!';
+        display.innerText = '✅ Semua baris selesai ditandai!';
       }
     }
 
     function copyResult() {
       if (stampedResults.length === 0) {
-        alert('Belum ada hasil lirik yang ditandai!');
+        showToast('⚠️ Belum ada hasil lirik yang ditandai!');
         return;
       }
 
@@ -355,7 +629,7 @@
 
       if (navigator.clipboard && window.isSecureContext) {
         navigator.clipboard.writeText(text)
-          .then(() => alert('Hasil berhasil disalin! Tinggal paste ke kolom synced_lyrics di Supabase.'))
+          .then(() => showToast('📋 Berhasil disalin! Siap paste ke GitHub.'))
           .catch(() => fallbackCopy(text));
       } else {
         fallbackCopy(text);
@@ -371,9 +645,9 @@
       tempArea.select();
       try {
         document.execCommand('copy');
-        alert('Hasil berhasil disalin! Tinggal paste ke kolom synced_lyrics di Supabase.');
+        showToast('📋 Berhasil disalin! Siap paste ke GitHub.');
       } catch (err) {
-        alert('Gagal menyalin otomatis. Silakan blok dan salin manual dari kotak hasil.');
+        showToast('⚠️ Gagal menyalin otomatis. Silakan salin manual.');
       }
       document.body.removeChild(tempArea);
     }
